@@ -1,0 +1,68 @@
+import { NextResponse } from "next/server";
+import { PrismaClient, Prisma } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+
+    console.log("Incoming bill payload:", body);
+
+    if (
+      !body.billNumber ||
+      !body.billDate ||
+      !body.billAmount ||
+      !body.customerId
+    ) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const bill = await prisma.salesBill.create({
+      data: {
+        billNumber: body.billNumber,
+        billDate: new Date(body.billDate),
+        billAmount: new Prisma.Decimal(body.billAmount),
+        customerId: body.customerId,
+      },
+    });
+
+    return NextResponse.json(bill);
+  } catch (error: any) {
+    console.error("Sales bill creation failed:", error);
+
+    return NextResponse.json(
+      { error: error.message || "Failed to save bill" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+
+  if (id) {
+    const bill = await prisma.salesBill.findUnique({
+      where: { id },
+      include: { customer: true },
+    });
+    return NextResponse.json(bill);
+  }
+
+  const bills = await prisma.salesBill.findMany({
+    include: {
+      customer: true,
+      payments: true,
+    },
+    orderBy: {
+      billDate: "asc",
+    },
+  });
+
+  return NextResponse.json(bills);
+}
+
