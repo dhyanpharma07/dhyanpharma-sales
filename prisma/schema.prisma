@@ -5,43 +5,37 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Customer {
-  id           String   @id @default(uuid())
-  name         String
-  phone        String?
-  address      String?
-  gstNumber    String?
-  drugLicense  String?
-  panNumber    String?
-
-  salesBills   SalesBill[]
-
-  createdAt    DateTime @default(now())
+  id          String      @id @default(uuid())
+  name        String
+  phone       String?
+  address     String?
+  gstNumber   String?
+  panNumber   String?
+  createdAt   DateTime    @default(now())
+  drugLicense String?
+  salesBills  SalesBill[]
 }
 
-
-
 model SalesBill {
-  id         String     @id @default(uuid())
-  billNumber String     @unique
+  id         String    @id @default(uuid())
+  billNumber String    @unique
   billDate   DateTime
   billAmount Decimal
-  createdAt  DateTime   @default(now())
-
+  createdAt  DateTime  @default(now())
   customerId String
-  customer   Customer   @relation(fields: [customerId], references: [id])
-
   payments   Payment[]
+  customer   Customer  @relation(fields: [customerId], references: [id])
 }
 
 model Payment {
   id          String    @id @default(uuid())
   billId      String
-  bill        SalesBill @relation(fields: [billId], references: [id])
-
   paymentDate DateTime
   amount      Decimal
   createdAt   DateTime  @default(now())
+  bill        SalesBill @relation(fields: [billId], references: [id])
 }
