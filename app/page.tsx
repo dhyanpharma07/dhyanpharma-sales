@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import SalesChart from "./components/SalesChart";
 import Image from "next/image";
+import { Plus } from "lucide-react";
 
 type ChartType = "monthly" | "quarterly" | "yearly";
 
@@ -61,26 +62,30 @@ export default function Home() {
 
       {/* Quick Actions */}
       <div className="bg-white dark:bg-gray-900 rounded-lg p-6 shadow">
-        <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
+        <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">
+          Quick Actions
+        </h2>
 
         <div className="flex flex-wrap gap-4">
+          {/* Primary */}
           <Link
             href="/bills/new"
-            className="bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition"
           >
-            ➕ Add Sales Bill
+            <Plus size={16} /> Add Sales Bill
           </Link>
 
+          {/* Secondary */}
           <Link
             href="/customers/new"
-            className="bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition"
           >
-            ➕ Add Customer
+            <Plus size={16} /> Add Customer
           </Link>
 
           <Link
             href="/bills"
-            className="bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition"
           >
             📄 View Sales Bills
           </Link>

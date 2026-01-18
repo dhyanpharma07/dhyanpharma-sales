@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, Pencil, Plus } from "lucide-react";
@@ -15,8 +15,26 @@ type Bill = {
   };
 };
 
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 export default function SalesBillListPage() {
   const [bills, setBills] = useState<Bill[]>([]);
+  const [month, setMonth] = useState<string>("all");
+  const [year, setYear] = useState<string>("all");
+
   const router = useRouter();
 
   useEffect(() => {
@@ -27,27 +45,77 @@ export default function SalesBillListPage() {
 
   function handleEdit(billId: string) {
     const ok = window.confirm("Are you sure you want to edit this bill?");
-    if (ok) {
-      router.push(`/bills/${billId}/edit`);
-    }
+    if (ok) router.push(`/bills/${billId}/edit`);
   }
 
-  const totalAmount = bills.reduce(
+  /* ------------------ FILTER LOGIC ------------------ */
+  const years = useMemo(() => {
+    const ys = bills.map((b) =>
+      new Date(b.billDate).getFullYear().toString()
+    );
+    return Array.from(new Set(ys)).sort();
+  }, [bills]);
+
+  const filteredBills = useMemo(() => {
+    return bills.filter((bill) => {
+      const date = new Date(bill.billDate);
+      const billMonth = date.getMonth().toString();
+      const billYear = date.getFullYear().toString();
+
+      return (
+        (month === "all" || billMonth === month) &&
+        (year === "all" || billYear === year)
+      );
+    });
+  }, [bills, month, year]);
+
+  const totalAmount = filteredBills.reduce(
     (sum, bill) => sum + Number(bill.billAmount),
     0
   );
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-gray-800">
-          Sales Bills
-        </h1>
+      {/* Title */}
+      <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
+        Sales Bills
+      </h1>
+
+      {/* Filters + Add */}
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
+        <div className="flex items-center gap-3">
+          {/* Month */}
+          <select
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+            className="rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all">All Months</option>
+            {MONTHS.map((m, i) => (
+              <option key={m} value={i.toString()}>
+                {m}
+              </option>
+            ))}
+          </select>
+
+          {/* Year */}
+          <select
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            className="rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all">All Years</option>
+            {years.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <Link
           href="/bills/new"
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition"
+          className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
         >
           <Plus size={16} />
           Add Sales Bill
@@ -55,55 +123,63 @@ export default function SalesBillListPage() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-white rounded-lg shadow">
+      <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <table className="w-full text-sm">
-          <thead className="bg-gray-100 text-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
             <tr>
-              <th className="p-3 text-left">Bill No</th>
-              <th className="p-3 text-left">Date</th>
-              <th className="p-3 text-left">Customer</th>
-              <th className="p-3 text-right">Amount (₹)</th>
-              <th className="p-3 text-center">Actions</th>
+              <th className="px-4 py-3 text-left font-medium">
+                Bill No
+              </th>
+              <th className="px-4 py-3 text-left font-medium">
+                Date
+              </th>
+              <th className="px-4 py-3 text-left font-medium">
+                Customer
+              </th>
+              <th className="px-4 py-3 text-right font-medium">
+                Amount (₹)
+              </th>
+              <th className="px-4 py-3 text-center font-medium">
+                Actions
+              </th>
             </tr>
           </thead>
 
-          <tbody>
-            {bills.map((bill) => (
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {filteredBills.map((bill) => (
               <tr
                 key={bill.id}
-                className="border-t hover:bg-gray-50 cursor-pointer"
+                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition"
                 onClick={() => router.push(`/bills/${bill.id}`)}
               >
-                <td className="p-3 font-medium">
+                <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
                   {bill.billNumber}
                 </td>
-                <td className="p-3">
+                <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
                   {new Date(bill.billDate).toLocaleDateString()}
                 </td>
-                <td className="p-3">{bill.customer.name}</td>
-                <td className="p-3 text-right">
+                <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                  {bill.customer.name}
+                </td>
+                <td className="px-4 py-3 text-right text-gray-800 dark:text-gray-200">
                   ₹{Number(bill.billAmount).toFixed(2)}
                 </td>
                 <td
-                  className="p-3 text-center space-x-3"
+                  className="px-4 py-3 text-center space-x-3"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {/* View */}
                   <button
                     title="View Bill"
-                    onClick={() =>
-                      router.push(`/bills/${bill.id}`)
-                    }
-                    className="text-green-600 hover:text-green-800"
+                    onClick={() => router.push(`/bills/${bill.id}`)}
+                    className="text-green-600 hover:text-green-700 dark:text-green-400"
                   >
                     <Eye size={18} />
                   </button>
 
-                  {/* Edit */}
                   <button
                     title="Edit Bill"
                     onClick={() => handleEdit(bill.id)}
-                    className="text-blue-600 hover:text-blue-800"
+                    className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
                   >
                     <Pencil size={18} />
                   </button>
@@ -111,27 +187,25 @@ export default function SalesBillListPage() {
               </tr>
             ))}
 
-            {/* Total Row */}
-            {bills.length > 0 && (
-              <tr className="bg-gray-100 font-semibold border-t">
-                <td className="p-3" colSpan={3}>
+            {filteredBills.length > 0 && (
+              <tr className="bg-gray-50 dark:bg-gray-800 font-semibold">
+                <td className="px-4 py-3" colSpan={3}>
                   Total
                 </td>
-                <td className="p-3 text-right">
+                <td className="px-4 py-3 text-right">
                   ₹{totalAmount.toFixed(2)}
                 </td>
                 <td />
               </tr>
             )}
 
-            {/* Empty State */}
-            {bills.length === 0 && (
+            {filteredBills.length === 0 && (
               <tr>
                 <td
                   colSpan={5}
-                  className="p-6 text-center text-gray-500"
+                  className="px-6 py-8 text-center text-gray-500 dark:text-gray-400"
                 >
-                  No sales bills found
+                  No bills found for selected period
                 </td>
               </tr>
             )}
