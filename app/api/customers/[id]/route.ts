@@ -1,15 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
+
     const customer = await prisma.customer.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!customer) {
@@ -21,9 +23,9 @@ export async function GET(
 
     return NextResponse.json(customer);
   } catch (error) {
-    console.error(error);
+    console.error("Customer fetch error:", error);
     return NextResponse.json(
-      { error: "Failed to load customer" },
+      { error: "Failed to fetch customer" },
       { status: 500 }
     );
   }
