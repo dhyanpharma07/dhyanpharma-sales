@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Home, FileText, Users } from "lucide-react";
-import ThemeToggle from "@/app/components/ThemeToggle";
 
 export default function DashboardLayout({
   children,
@@ -44,12 +43,12 @@ export default function DashboardLayout({
         </div>
 
         {/* Theme toggle row */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+        {/* <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
           <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
             Theme
           </span>
           <ThemeToggle />
-        </div>
+        </div> */}
 
         {/* Navigation */}
         <nav className="p-3 space-y-1">
