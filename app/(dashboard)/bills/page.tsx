@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, Pencil } from "lucide-react";
+import Link from "next/link";
+import { Eye, Pencil, Plus } from "lucide-react";
 
 type Bill = {
   id: string;
@@ -15,8 +16,8 @@ type Bill = {
 };
 
 export default function SalesBillListPage() {
-  const router = useRouter();
   const [bills, setBills] = useState<Bill[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     fetch("/api/bills")
@@ -37,53 +38,62 @@ export default function SalesBillListPage() {
   );
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-6">Sales Bills</h1>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold text-gray-800">
+          Sales Bills
+        </h1>
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow">
-        <table className="min-w-full text-sm">
-          {/* TABLE HEADER */}
+        <Link
+          href="/bills/new"
+          className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition"
+        >
+          <Plus size={16} />
+          Add Sales Bill
+        </Link>
+      </div>
+
+      {/* Table */}
+      <div className="overflow-x-auto bg-white rounded-lg shadow">
+        <table className="w-full text-sm">
           <thead className="bg-gray-100 text-gray-700">
             <tr>
-              <th className="p-3 text-left font-semibold">Bill No</th>
-              <th className="p-3 text-left font-semibold">Date</th>
-              <th className="p-3 text-left font-semibold">Customer</th>
-              <th className="p-3 text-right font-semibold">Amount (₹)</th>
-              <th className="p-3 text-center font-semibold">Actions</th>
+              <th className="p-3 text-left">Bill No</th>
+              <th className="p-3 text-left">Date</th>
+              <th className="p-3 text-left">Customer</th>
+              <th className="p-3 text-right">Amount (₹)</th>
+              <th className="p-3 text-center">Actions</th>
             </tr>
           </thead>
 
-          {/* TABLE BODY */}
           <tbody>
             {bills.map((bill) => (
               <tr
                 key={bill.id}
+                className="border-t hover:bg-gray-50 cursor-pointer"
                 onClick={() => router.push(`/bills/${bill.id}`)}
-                className="border-t hover:bg-gray-50 cursor-pointer transition"
               >
-                <td className="p-3 font-medium">{bill.billNumber}</td>
-
-                <td className="p-3 text-gray-600">
-                  {new Date(bill.billDate).toLocaleDateString("en-IN")}
+                <td className="p-3 font-medium">
+                  {bill.billNumber}
                 </td>
-
+                <td className="p-3">
+                  {new Date(bill.billDate).toLocaleDateString()}
+                </td>
                 <td className="p-3">{bill.customer.name}</td>
-
-                <td className="p-3 text-right font-semibold">
-                  ₹{" "}
-                  {Number(bill.billAmount).toLocaleString("en-IN", {
-                    minimumFractionDigits: 2,
-                  })}
+                <td className="p-3 text-right">
+                  ₹{Number(bill.billAmount).toFixed(2)}
                 </td>
-
-                <td className="p-3 text-center space-x-3">
+                <td
+                  className="p-3 text-center space-x-3"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {/* View */}
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      router.push(`/bills/${bill.id}`);
-                    }}
                     title="View Bill"
+                    onClick={() =>
+                      router.push(`/bills/${bill.id}`)
+                    }
                     className="text-green-600 hover:text-green-800"
                   >
                     <Eye size={18} />
@@ -91,11 +101,8 @@ export default function SalesBillListPage() {
 
                   {/* Edit */}
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleEdit(bill.id);
-                    }}
                     title="Edit Bill"
+                    onClick={() => handleEdit(bill.id)}
                     className="text-blue-600 hover:text-blue-800"
                   >
                     <Pencil size={18} />
@@ -104,23 +111,20 @@ export default function SalesBillListPage() {
               </tr>
             ))}
 
-            {/* TOTAL ROW */}
+            {/* Total Row */}
             {bills.length > 0 && (
-              <tr className="border-t bg-gray-100 font-semibold">
-                <td className="p-3 text-right" colSpan={3}>
+              <tr className="bg-gray-100 font-semibold border-t">
+                <td className="p-3" colSpan={3}>
                   Total
                 </td>
-                <td className="p-3 text-right text-blue-700">
-                  ₹{" "}
-                  {totalAmount.toLocaleString("en-IN", {
-                    minimumFractionDigits: 2,
-                  })}
+                <td className="p-3 text-right">
+                  ₹{totalAmount.toFixed(2)}
                 </td>
                 <td />
               </tr>
             )}
 
-            {/* EMPTY STATE */}
+            {/* Empty State */}
             {bills.length === 0 && (
               <tr>
                 <td

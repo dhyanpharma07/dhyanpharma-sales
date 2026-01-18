@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, Pencil } from "lucide-react";
+import { Eye, Pencil, Plus } from "lucide-react";
 
 type Customer = {
   id: string;
@@ -39,9 +39,9 @@ export default function CustomersPage() {
 
         <button
           onClick={() => router.push("/customers/new")}
-          className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+          className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition"
         >
-          ➕ Add Customer
+          <Plus size={16} /> Add Customer
         </button>
       </div>
 

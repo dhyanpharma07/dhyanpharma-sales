@@ -59,6 +59,33 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Quick Actions */}
+      <div className="bg-white dark:bg-gray-900 rounded-lg p-6 shadow">
+        <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
+
+        <div className="flex flex-wrap gap-4">
+          <Link
+            href="/bills/new"
+            className="bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            ➕ Add Sales Bill
+          </Link>
+
+          <Link
+            href="/customers/new"
+            className="bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            ➕ Add Customer
+          </Link>
+
+          <Link
+            href="/bills"
+            className="bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            📄 View Sales Bills
+          </Link>
+        </div>
+      </div>
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-blue-50 dark:bg-blue-950 p-5 rounded-lg shadow">
@@ -97,34 +124,6 @@ export default function Home() {
         type={chartType}
         onChangeType={setChartType}
       />
-
-      {/* Quick Actions */}
-      <div className="bg-white dark:bg-gray-900 rounded-lg p-6 shadow">
-        <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-
-        <div className="flex flex-wrap gap-4">
-          <Link
-            href="/bills/new"
-            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
-          >
-            ➕ Add Sales Bill
-          </Link>
-
-          <Link
-            href="/customers/new"
-            className="bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
-          >
-            ➕ Add Customer
-          </Link>
-
-          <Link
-            href="/bills"
-            className="bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
-          >
-            📄 View Sales Bills
-          </Link>
-        </div>
-      </div>
     </div>
   );
 }
