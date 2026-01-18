@@ -3,34 +3,31 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function POST(req: Request) {
+/**
+ * GET /api/customers
+ * Returns all customers with basic info
+ */
+export async function GET() {
   try {
-    const body = await req.json();
-
-    const customer = await prisma.customer.create({
-      data: {
-        name: body.name,
-        phone: body.phone,
-        address: body.address,
-        gstNumber: body.gstNumber,
-        drugLicense: body.drugLicense,
-        panNumber: body.panNumber,
+    const customers = await prisma.customer.findMany({
+      orderBy: {
+        name: "asc",
+      },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        address: true,
+        createdAt: true,
       },
     });
 
-    return NextResponse.json(customer);
+    return NextResponse.json(customers);
   } catch (error) {
-    console.error(error);
+    console.error("Failed to fetch customers:", error);
     return NextResponse.json(
-      { error: "Failed to create customer" },
+      { error: "Failed to load customers" },
       { status: 500 }
     );
   }
-}
-
-export async function GET() {
-  const customers = await prisma.customer.findMany({
-    orderBy: { name: "asc" },
-  });
-  return NextResponse.json(customers);
 }
