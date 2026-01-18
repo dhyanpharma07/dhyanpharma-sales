@@ -16,8 +16,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Dhyan Pharma",
   description: "Sales & Receivables Management System",
+  icons: {
+    icon: "/assets/favicon.ico",
+  },
 };
-
 export default function RootLayout({
   children,
 }: {
